@@ -50,12 +50,24 @@ class ProductsApp:
             messagebox.showerror("Error", "Precio debe ser un número y Stock un entero")
             return
 
+        if self.product_exists(name):
+            messagebox.showwarning("Advertencia", "El producto ya existe")
+            return
+
         with open(PRODUCTS_FILE, mode="a", newline="") as file:
             writer = csv.writer(file)
             writer.writerow([name, price, stock])
 
         messagebox.showinfo("Éxito", "Producto agregado correctamente")
         self.clear_fields()
+
+    def product_exists(self, name):
+        try:
+            with open(PRODUCTS_FILE, mode="r") as file:
+                reader = csv.reader(file)
+                return any(row and row[0].strip().lower() == name.strip().lower() for row in reader)
+        except FileNotFoundError:
+            return False
 
     def show_products(self):
         try:
